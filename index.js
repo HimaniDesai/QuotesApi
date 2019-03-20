@@ -19,7 +19,7 @@ const path=require("path");
   app.post('/webhook',(req,res) =>{
     //var city="delhi";
     
-  	var jokes=req.body.result.parameters.quot;
+  	var jokes=req.body.result.parameters.quotes;
   //	if(city == null)
   //		city="Delhi";
         var w=getJoke();
