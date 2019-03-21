@@ -25,7 +25,7 @@ const path=require("path");
    	var jokes=req.body.result.parameters.place;
   //	if(city == null)
   //		city="Delhi";
-        var w=PlaceResponse(response);
+        var w=getCoordinates(387001);
         return res.json({
           speech: w,
           displayText: w,
@@ -110,4 +110,4 @@ function PlaceResponse(response) {
 app.listen(process.env.PORT || 8000, function() {
   console.log("Server up and listening");
 });
-getCoordinates(387001); 
+ 
