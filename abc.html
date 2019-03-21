@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places&v=3.exp"></script>
+<script>
+
+var service = new google.maps.places.AutocompleteService();
+var search="Oodles"
+
+service.getPlacePredictions({
+    input: search,
+        offset: search.length
+}, function listentoresult(list, status) {
+        if (status != google.maps.places.PlacesServiceStatus.OK || list==null ) {
+            return;
+    }
+
+         var results = document.getElementById('results');
+
+    for (var i = 0, prediction; prediction = list[i]; i++) {
+            results.innerHTML += '<li>' + prediction.description + '</li>';
+      }
+});
+
+</script>
+
+</head>
+<body>
+  <p>Query suggestions for 'sydney':</p>
+  <ul id="results"></ul>
+</body>
+</html>

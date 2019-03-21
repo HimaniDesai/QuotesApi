@@ -1,6 +1,7 @@
 'use strict';
 var dotenv = require('dotenv');
 dotenv.load();
+var https = require('follow-redirects').https;
 //var google = require('google');
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -14,48 +15,90 @@ app.use(
     extended: true
   })
 );
+var placeDetails = function() {
+	this.places = [];
+}
 const path=require("path");
 
   app.post('/webhook',(req,res) =>{
     //var city="delhi";
-    var query= req.body.result &&
-    req.body.result.parameters &&
-    req.body.result.parameters.q
-      ? req.body.result.parameters.q
-      : 'chatbot';
-  	var jokes=req.body.result.parameters.quotes;
+   	var jokes=req.body.result.parameters.place;
   //	if(city == null)
   //		city="Delhi";
-        var w=getJoke(query);
+        var w=PlaceResponse(response);
         return res.json({
           speech: w,
           displayText: w,
-          source: "wikisearch"
+          source: "Places"
         }); 
   });
 
 var result;
-function getJoke(query)
-{
-	result=undefined;
-	const request = require('request');
+function getCoordinates(zipcode) {
+	https.request({
+		host: 'maps.googleapis.com',
+		path: '/maps/api/geocode/json?address=' + zipcode + '&key=AIzaSyCJuRDLJZNS5yO2MhWxlCN-4FnC4L1Rs8g',
+		method: 'GET'},
+		CoordinateResponse).end();
+}
+function placeSearch(latitude, longitude, radius) {
+	https.request({
+		host: 'maps.googleapis.com',
+		path: '/maps/api/place/nearbysearch/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&type=restaurant&key=AIzaSyCJuRDLJZNS5yO2MhWxlCN-4FnC4L1Rs8g',
+		method: 'GET'},
+		PlaceResponse).end();
+}
+function CoordinateResponse(response) {
+	var data = "";
+	var sdata = "";
+	var latitude = "";
+	var longitude = "";
 
-//let apiKey = '392e5b9bd00f4c5c35a0533f7abbac5d';
-//let city = 'portland';
-let url = "https://en.wikipedia.org/w/api.php?action=opensearch&search="+ query +"&format=json"
-request(url, function (err, response, body) {
-  if(err){
-    console.log('error:', error);
-  } else {
-    var wiki = JSON.parse(body);
-    for (var i = 0; i < 1; i++) {
-       var data = `You searched for ${wiki[1][i]}: And these are the  details — ${wiki[2][i]} Follow this link to read more — ${wiki[3][i]}` + '\n';
-        console.log(data);
-    }
-    result=data;
-  }
+	response.on('data', function(chunk) {
+		data += chunk;
+	});
+	response.on('end', function() {
+        sdata = JSON.parse(data);
+        latitude=-33.8670522;
+        longitude=151.1957362;
+		//latitude = sdata.results[0].geometry.viewport.northeast.lat;
+		//longitude = sdata.results[0].geometry.viewport.northeast.lng;
+		placeSearch(latitude, longitude, 50000);
+	});
+}
+function PlaceResponse(response) {
+	var p;
+	var data = "";
+	var sdata = "";
+	var PD = new placeDetails();
 
-});
+	response.on('data', function(chunk) {
+		data += chunk;
+	});
+	response.on('end', function() {
+		sdata = JSON.parse(data);
+		if (sdata.status === 'OK') {
+			console.log('Status: ' + sdata.status);
+			console.log('Results: ' + sdata.results.length);
+			for (p = 0; p < sdata.results.length; p++) {
+				PD.places.push(sdata.results[p]);
+			}
+			for (r = 0; r < sdata.results.length; r++) {
+				console.log('----------------------------------------------');
+        console.log(PD.places[r].name);
+        
+        console.log('Place ID (for Place Detail search on Google):' + PD.places[r].place_id);
+        console.log('Rating: ' + PD.places[r].rating);
+        console.log('Vicinity: ' + PD.places[r].vicinity);
+        result=PD.places[r].name+'Place ID (for Place Detail search on Google):' + PD.places[r].place_id+'Rating: ' + PD.places[r].rating+'Vicinity: ' + PD.places[r].vicinity;
+			}
+		} else {
+      console.log(sdata.status);
+      result=sdata.status;
+		}
+	});
+
+
 	while(result == undefined){
 		require('deasync').runLoopOnce();
 	}
@@ -67,3 +110,4 @@ request(url, function (err, response, body) {
 app.listen(process.env.PORT || 8000, function() {
   console.log("Server up and listening");
 });
+getCoordinates(387001); 
