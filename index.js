@@ -35,18 +35,20 @@ const path=require("path");
 
 var result;
 function getCoordinates(zipcode) {
-	https.request({
+	result=https.request({
 		host: 'maps.googleapis.com',
 		path: '/maps/api/geocode/json?address=' + zipcode + '&key=AIzaSyCJuRDLJZNS5yO2MhWxlCN-4FnC4L1Rs8g',
 		method: 'GET'},
-		CoordinateResponse).end();
+    CoordinateResponse).end();
+    return result;
 }
 function placeSearch(latitude, longitude, radius) {
-	https.request({
+	var result=https.request({
 		host: 'maps.googleapis.com',
 		path: '/maps/api/place/nearbysearch/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&type=restaurant&key=AIzaSyCJuRDLJZNS5yO2MhWxlCN-4FnC4L1Rs8g',
 		method: 'GET'},
-		PlaceResponse).end();
+    PlaceResponse).end();
+    return response;
 }
 function CoordinateResponse(response) {
 	var data = "";
@@ -63,7 +65,8 @@ function CoordinateResponse(response) {
         longitude=151.1957362;
 		//latitude = sdata.results[0].geometry.viewport.northeast.lat;
 		//longitude = sdata.results[0].geometry.viewport.northeast.lng;
-		placeSearch(latitude, longitude, 50000);
+    result=placeSearch(latitude, longitude, 50000);
+    return result;
 	});
 }
 function PlaceResponse(response) {
