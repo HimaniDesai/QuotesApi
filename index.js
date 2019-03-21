@@ -34,7 +34,7 @@ const path=require("path");
   });
 
 var result;
-function PlaceResponse(zipcode) {
+function getCoordinates(zipcode) {
 	result=https.request({
 		host: 'maps.googleapis.com',
 		path: '/maps/api/geocode/json?address=' + zipcode + '&key=AIzaSyCJuRDLJZNS5yO2MhWxlCN-4FnC4L1Rs8g',
@@ -69,7 +69,7 @@ function CoordinateResponse(response) {
     return result;
 	});
 }
-function getCoordinates(response) {
+function PlaceResponse(response) {
 	var p;
 	var data = "";
 	var sdata = "";
