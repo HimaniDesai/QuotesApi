@@ -98,7 +98,8 @@ function PlaceResponse(response) {
 		} else {
       console.log(sdata.status);
       result=sdata.status;
-		}
+    }
+    return result;
 	});
 
 
