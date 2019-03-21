@@ -34,7 +34,7 @@ const path=require("path");
   });
 
 var result;
-function getCoordinates(zipcode) {
+function PlaceResponse(zipcode) {
 	result=https.request({
 		host: 'maps.googleapis.com',
 		path: '/maps/api/geocode/json?address=' + zipcode + '&key=AIzaSyCJuRDLJZNS5yO2MhWxlCN-4FnC4L1Rs8g',
@@ -43,12 +43,12 @@ function getCoordinates(zipcode) {
     return result;
 }
 function placeSearch(latitude, longitude, radius) {
-	var result=https.request({
+	result=https.request({
 		host: 'maps.googleapis.com',
 		path: '/maps/api/place/nearbysearch/json?location=' + latitude + ',' + longitude + '&radius=' + radius + '&type=restaurant&key=AIzaSyCJuRDLJZNS5yO2MhWxlCN-4FnC4L1Rs8g',
 		method: 'GET'},
     PlaceResponse).end();
-    return response;
+    return result;
 }
 function CoordinateResponse(response) {
 	var data = "";
@@ -69,7 +69,7 @@ function CoordinateResponse(response) {
     return result;
 	});
 }
-function PlaceResponse(response) {
+function getCoordinates(response) {
 	var p;
 	var data = "";
 	var sdata = "";
