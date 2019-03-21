@@ -44,15 +44,29 @@ request(url, function (err, response, body) {
   if(err){
     console.log('error:', error);
   } else {
-  let places = JSON.parse(body);
- // let locations = places.results;
- // let randLoc=locations[0];
-	//  console.log(locations);
-   
-   
-    let message = `It's ${places.results}!`;
-    console.log(message);
+  
+    let sdata = JSON.parse(data);
+    if (sdata.status === 'OK') {
+      console.log('Status: ' + sdata.status);
+      console.log('Results: ' + sdata.results.length);
+      for (p = 0; p < sdata.results.length; p++) {
+        PD.places.push(sdata.results[p]);
+      }
+      for (r = 0; r < sdata.results.length; r++) {
+        console.log('----------------------------------------------');
+        console.log(PD.places[r].name);
+        
+        console.log('Place ID (for Place Detail search on Google):' + PD.places[r].place_id);
+        console.log('Rating: ' + PD.places[r].rating);
+        console.log('Vicinity: ' + PD.places[r].vicinity);
+        result=PD.places[r].name+'Place ID (for Place Detail search on Google):' + PD.places[r].place_id+'Rating: ' + PD.places[r].rating+'Vicinity: ' + PD.places[r].vicinity;
+      }
+    }
+   else {
+    console.log(sdata.status);
+    result=sdata.status;
     r=message;
+   }
   }
 
 });
