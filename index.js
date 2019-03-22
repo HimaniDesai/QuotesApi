@@ -1,5 +1,7 @@
 'use strict';
-
+var dotenv = require('dotenv');
+dotenv.load();
+//var google = require('google');
 const express = require("express");
 const bodyParser = require("body-parser");
 //const uuidv1 = require('uuid/v1');
@@ -13,69 +15,46 @@ app.use(
   })
 );
 const path=require("path");
-//const server=require("http").createServer(app);
-//const io=require("socket.io")(server);
-app.post('/webhook',(req,res) =>{
 
-var w=search();
-
+  app.post('/webhook',(req,res) =>{
+    //var city="delhi";
+    
+  	var jokes=req.body.result.parameters.nearby;
+  //	if(city == null)
+  //		city="Delhi";
+        var w=getJoke();
         return res.json({
           speech: w,
           displayText: w,
-          source: "joke"
+          source: "Places"
         }); 
-});  
+  });
 
-var r;
-function search()
+var result;
+function getJoke()
 {
-	r=undefined;
-	const request = require('request');
-
-var key = "AIzaSyCJuRDLJZNS5yO2MhWxlCN-4FnC4L1Rs8g";
-   var location = "-33.8670522,151.1957362";
-  var radius = 16000;
-  var sensor = false;
-  var types = "restaurant";
-//let apiKey = '392e5b9bd00f4c5c35a0533f7abbac5d';
-//let city = 'portland';
-let url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyCJuRDLJZNS5yO2MhWxlCN-4FnC4L1Rs8g&location=-33.8670522,151.1957362&radius=16000&sensor=true&types=restaurant';
-request(url, function (err, response, body) {
-  if(err){
-    console.log('error:', error);
-  } else {
-  
-    let sdata = JSON.parse(data);
-    if (sdata.status === 'OK') {
-      console.log('Status: ' + sdata.status);
-      console.log('Results: ' + sdata.results.length);
-      for (p = 0; p < sdata.results.length; p++) {
-        PD.places.push(sdata.results[p]);
-      }
-      for (r = 0; r < sdata.results.length; r++) {
-        console.log('----------------------------------------------');
-        console.log(PD.places[r].name);
-        
-        console.log('Place ID (for Place Detail search on Google):' + PD.places[r].place_id);
-        console.log('Rating: ' + PD.places[r].rating);
-        console.log('Vicinity: ' + PD.places[r].vicinity);
-        result=PD.places[r].name+'Place ID (for Place Detail search on Google):' + PD.places[r].place_id+'Rating: ' + PD.places[r].rating+'Vicinity: ' + PD.places[r].vicinity;
-      }
-    }
-   else {
-    console.log(sdata.status);
-    result=sdata.status;
-    r=message;
-   }
+  var resu;
+	var coin=Math.floor(Math.random() * 2);
+  if(coin==0)
+  {
+    resu='heads';
+    console.log('heads');}
+  else{
+    resu='tails';
+    console.log('tails');
   }
-
-});
-	while(r == undefined){
+  result=resu;
+	while(result == undefined){
 		require('deasync').runLoopOnce();
 	}
 		
-	return r;
+	return result;
 }
+  
+
 app.listen(process.env.PORT || 8000, function() {
   console.log("Server up and listening");
 });
+
+
+
